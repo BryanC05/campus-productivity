@@ -71,20 +71,42 @@ def get_client():
 
 
 def generate_content_ai(prompt: str, system_prompt: str) -> str:
-    """Generate content using configured AI API."""
-    client, model = get_client()
+    """Generate content using configured AI API with fallback models."""
+    client, primary_model = get_client()
     
-    response = client.chat.completions.create(
-        model=model,
-        messages=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": prompt}
-        ],
-        temperature=0.7,
-        max_tokens=4096
-    )
+    # List of models to try (primary + fallbacks for OpenRouter)
+    models_to_try = [primary_model]
     
-    return response.choices[0].message.content
+    # Add fallbacks if using OpenRouter
+    if "openrouter" in client.base_url.host:
+        models_to_try.extend([
+            "meta-llama/llama-3-8b-instruct:free",
+            "mistralai/mistral-7b-instruct:free",
+            "huggingfaceh4/zephyr-7b-beta:free",
+            "openchat/openchat-7b:free"
+        ])
+    
+    last_error = None
+    
+    for model in models_to_try:
+        try:
+            response = client.chat.completions.create(
+                model=model,
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": prompt}
+                ],
+                temperature=0.7,
+                max_tokens=4096
+            )
+            return response.choices[0].message.content
+            
+        except Exception as e:
+            last_error = e
+            continue  # Try next model
+            
+    # If all failed
+    raise last_error
 
 
 def generate_outline(topic: str) -> str:
