@@ -1,31 +1,42 @@
-# Local Ollama with Cloud Models (FREE tier)
-import requests
+# Moonshot Kimi K2 Cloud API
+import os
+from openai import OpenAI
+from dotenv import load_dotenv
+
+load_dotenv()
+
+# Moonshot API Configuration
+MOONSHOT_API_KEY = os.getenv("MOONSHOT_API_KEY")
+MOONSHOT_BASE_URL = "https://api.moonshot.cn/v1"
+MODEL = "kimi-k2-0711-preview"  # Latest Kimi K2 model
 
 
-# Ollama local server (routes to cloud for cloud models)
-OLLAMA_BASE_URL = "http://localhost:11434"
-MODEL = "kimi-k2:1t-cloud"  # Uses Ollama Cloud free tier
+def get_client():
+    """Get OpenAI-compatible client for Moonshot API."""
+    if not MOONSHOT_API_KEY:
+        raise ValueError("MOONSHOT_API_KEY not found in environment variables. Please set it in .env or Streamlit secrets.")
+    
+    return OpenAI(
+        api_key=MOONSHOT_API_KEY,
+        base_url=MOONSHOT_BASE_URL
+    )
 
 
-def generate_content_ollama(prompt: str, system_prompt: str) -> str:
-    """Generate content using Ollama (local+cloud)."""
-    response = requests.post(
-        f"{OLLAMA_BASE_URL}/api/chat",
-        json={
-            "model": MODEL,
-            "messages": [
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": prompt}
-            ],
-            "stream": False
-        },
-        timeout=120
+def generate_content_moonshot(prompt: str, system_prompt: str) -> str:
+    """Generate content using Moonshot Kimi K2 Cloud API."""
+    client = get_client()
+    
+    response = client.chat.completions.create(
+        model=MODEL,
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": prompt}
+        ],
+        temperature=0.7,
+        max_tokens=4096
     )
     
-    if response.status_code == 200:
-        return response.json()["message"]["content"]
-    else:
-        raise ValueError(f"Ollama error: {response.text}")
+    return response.choices[0].message.content
 
 
 def generate_outline(topic: str) -> str:
@@ -34,7 +45,7 @@ def generate_outline(topic: str) -> str:
     Create detailed assignment outlines with clear sections, bullet points, and suggestions.
     Respond in the same language as the user's input (Indonesian or English)."""
     
-    return generate_content_ollama(
+    return generate_content_moonshot(
         f"Create a comprehensive outline for an assignment about: {topic}",
         system_prompt
     )
@@ -46,7 +57,7 @@ def generate_code_snippet(topic: str) -> str:
     Generate clean, well-commented code snippets with explanations.
     Include examples and best practices. Use appropriate programming language based on context."""
     
-    return generate_content_ollama(
+    return generate_content_moonshot(
         f"Generate code snippets and examples for: {topic}",
         system_prompt
     )
@@ -59,7 +70,7 @@ def generate_essay_structure(topic: str) -> str:
     Include suggested arguments, evidence to look for, and transition phrases.
     Respond in the same language as the user's input."""
     
-    return generate_content_ollama(
+    return generate_content_moonshot(
         f"Create a detailed essay structure for: {topic}",
         system_prompt
     )
