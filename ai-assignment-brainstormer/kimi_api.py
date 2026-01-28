@@ -71,21 +71,48 @@ def get_client():
     ), config['model']
 
 
+MODEL_LIST = [
+    "meta-llama/llama-3.2-1b-instruct:free",
+    "meta-llama/llama-3-8b-instruct:free",
+    "google/gemma-2-9b-it:free",
+    "mistralai/mistral-7b-instruct:free",
+    "microsoft/phi-3-mini-128k-instruct:free",
+    "huggingfaceh4/zephyr-7b-beta:free"
+]
+
 def generate_content_ai(prompt: str, system_prompt: str) -> str:
-    """Generate content using configured AI API."""
-    client, model = get_client()
+    """Generate content using configured AI API with robust fallback."""
+    client, primary_model = get_client()
     
-    response = client.chat.completions.create(
-        model=model,
-        messages=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": prompt}
-        ],
-        temperature=0.7,
-        max_tokens=4096
-    )
+    # If using OpenRouter, try fallback models if the primary fails
+    models_to_try = [primary_model]
+    if "openrouter" in str(client.base_url):
+        models_to_try = MODEL_LIST  # Try all known free models
+    else:
+         models_to_try = [primary_model]
+         
+    last_error = None
     
-    return response.choices[0].message.content
+    for model in models_to_try:
+        try:
+            response = client.chat.completions.create(
+                model=model,
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": prompt}
+                ],
+                temperature=0.7,
+                max_tokens=4096
+            )
+            return response.choices[0].message.content
+            
+        except Exception as e:
+            last_error = e
+            print(f"Model {model} failed: {e}")
+            continue
+            
+    # If all models fail
+    raise ValueError(f"All AI models failed. Last error: {last_error}. Please check API keys or service status.")
 
 
 def generate_outline(topic: str) -> str:
