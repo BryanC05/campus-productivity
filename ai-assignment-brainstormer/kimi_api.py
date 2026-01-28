@@ -36,7 +36,7 @@ def get_api_config():
                 return {
                     'api_key': st.secrets['GROQ_API_KEY'],
                     'base_url': 'https://api.groq.com/openai/v1',
-                    'model': 'llama-3.1-70b-versatile'
+                    'model': 'llama-3.3-70b-versatile'
                 }
 
     except Exception:
@@ -65,7 +65,7 @@ def get_api_config():
         return {
             'api_key': os.getenv("GROQ_API_KEY"),
             'base_url': 'https://api.groq.com/openai/v1',
-            'model': 'llama-3.1-70b-versatile'
+            'model': 'llama-3.3-70b-versatile'
         }
     
     return None
