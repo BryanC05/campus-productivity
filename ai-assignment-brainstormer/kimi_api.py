@@ -18,7 +18,7 @@ def get_api_config():
                 return {
                     'api_key': st.secrets['OPENROUTER_API_KEY'],
                     'base_url': 'https://openrouter.ai/api/v1',
-                    'model': 'meta-llama/llama-3.1-8b-instruct:free'  # Free model
+                    'model': 'google/gemma-2-9b-it:free'  # Free model
                 }
             if 'MOONSHOT_API_KEY' in st.secrets:
                 return {
@@ -40,7 +40,7 @@ def get_api_config():
         return {
             'api_key': os.getenv("OPENROUTER_API_KEY"),
             'base_url': 'https://openrouter.ai/api/v1',
-            'model': 'meta-llama/llama-3.1-8b-instruct:free'
+            'model': 'google/gemma-2-9b-it:free'
         }
     if os.getenv("MOONSHOT_API_KEY"):
         return {
