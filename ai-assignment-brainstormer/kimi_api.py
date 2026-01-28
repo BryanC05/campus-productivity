@@ -20,6 +20,12 @@ def get_api_config():
                     'base_url': 'https://openrouter.ai/api/v1',
                     'model': 'meta-llama/llama-3.2-1b-instruct:free'  # Free model
                 }
+            if 'GEMINI_API_KEY' in st.secrets:
+                return {
+                    'api_key': st.secrets['GEMINI_API_KEY'],
+                    'base_url': 'https://generativelanguage.googleapis.com/v1beta/openai/',
+                    'model': 'gemini-1.5-flash'
+                }
             if 'MOONSHOT_API_KEY' in st.secrets:
                 return {
                     'api_key': st.secrets['MOONSHOT_API_KEY'],
@@ -48,6 +54,12 @@ def get_api_config():
             'api_key': os.getenv("MOONSHOT_API_KEY"),
             'base_url': 'https://api.moonshot.cn/v1',
             'model': 'kimi-k2-0711-preview'
+        }
+    if os.getenv("GEMINI_API_KEY"):
+        return {
+            'api_key': os.getenv("GEMINI_API_KEY"),
+            'base_url': 'https://generativelanguage.googleapis.com/v1beta/openai/',
+            'model': 'gemini-1.5-flash'
         }
     if os.getenv("GROQ_API_KEY"):
         return {
