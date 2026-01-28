@@ -2,7 +2,7 @@
 
 > AI-powered study tools for Indonesian university students
 
-[![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?logo=streamlit&logoColor=white)](https://streamlit.io)
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://campus-productivity.streamlit.app)
 [![Python](https://img.shields.io/badge/Python-3.9+-3776AB?logo=python&logoColor=white)](https://python.org)
 [![Kimi K2](https://img.shields.io/badge/AI-Kimi%20K2-blueviolet)](https://www.moonshot.cn/)
 [![Saweria](https://img.shields.io/badge/Donate-Saweria-orange)](https://saweria.co/bryanchan)
