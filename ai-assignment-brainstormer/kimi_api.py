@@ -72,12 +72,14 @@ def get_client():
 
 
 MODEL_LIST = [
+    "deepseek/deepseek-r1:free",
+    "deepseek/deepseek-chat:free",
+    "qwen/qwen-2-7b-instruct:free",
     "meta-llama/llama-3.2-1b-instruct:free",
     "meta-llama/llama-3-8b-instruct:free",
     "google/gemma-2-9b-it:free",
     "mistralai/mistral-7b-instruct:free",
     "microsoft/phi-3-mini-128k-instruct:free",
-    "huggingfaceh4/zephyr-7b-beta:free"
 ]
 
 def generate_content_ai(prompt: str, system_prompt: str) -> str:
