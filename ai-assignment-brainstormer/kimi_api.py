@@ -1,23 +1,36 @@
 # Moonshot Kimi K2 Cloud API
 import os
+import streamlit as st
 from openai import OpenAI
 from dotenv import load_dotenv
 
 load_dotenv()
 
-# Moonshot API Configuration
-MOONSHOT_API_KEY = os.getenv("MOONSHOT_API_KEY")
+# Moonshot API Configuration - works with both .env and Streamlit secrets
+def get_api_key():
+    """Get API key from Streamlit secrets or environment variables."""
+    # Try Streamlit secrets first (for Streamlit Cloud)
+    try:
+        if hasattr(st, 'secrets') and 'MOONSHOT_API_KEY' in st.secrets:
+            return st.secrets['MOONSHOT_API_KEY']
+    except Exception:
+        pass
+    
+    # Fall back to environment variable (for local development)
+    return os.getenv("MOONSHOT_API_KEY")
+
 MOONSHOT_BASE_URL = "https://api.moonshot.cn/v1"
 MODEL = "kimi-k2-0711-preview"  # Latest Kimi K2 model
 
 
 def get_client():
     """Get OpenAI-compatible client for Moonshot API."""
-    if not MOONSHOT_API_KEY:
-        raise ValueError("MOONSHOT_API_KEY not found in environment variables. Please set it in .env or Streamlit secrets.")
+    api_key = get_api_key()
+    if not api_key:
+        raise ValueError("MOONSHOT_API_KEY not found. Set it in Streamlit secrets or .env file.")
     
     return OpenAI(
-        api_key=MOONSHOT_API_KEY,
+        api_key=api_key,
         base_url=MOONSHOT_BASE_URL
     )
 
